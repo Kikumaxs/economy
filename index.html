@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>注会经济法 · 学习进度</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 30px 20px;
+      margin-bottom: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: #8e9aaf;
+      margin-bottom: 20px;
+    }
+    .progress-section {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .big-percent {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    .progress-detail {
+      font-size: 0.9rem;
+      color: #8e9aaf;
+      margin-bottom: 12px;
+    }
+    .progress-wrapper {
+      background: #e9ecef;
+      border-radius: 20px;
+      height: 28px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4facfe, #00f2fe);
+      border-radius: 20px;
+      transition: width 0.3s ease;
+      color: white;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .reset-btn {
+      background: none;
+      border: 1px solid #ddd;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .reset-btn:active {
+      background: #f0f0f0;
+    }
+    .chapter-group {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .chapter-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #2c3e50;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0f4f8;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .chapter-hours {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #8e9aaf;
+    }
+    .section-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 8px;
+      border-radius: 14px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .section-item:active {
+      background: #f5f9ff;
+    }
+    .section-item.completed {
+      background: #f0faf5;
+    }
+    .check-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #cfd9e5;
+      margin-right: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+    .section-item.completed .check-circle {
+      background: #4facfe;
+      border-color: #4facfe;
+    }
+    .check-circle::after {
+      content: "";
+      width: 8px;
+      height: 14px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg) translate(-1px, -1px);
+      opacity: 0;
+      transition: 0.15s;
+    }
+    .section-item.completed .check-circle::after {
+      opacity: 1;
+    }
+    .section-info {
+      flex: 1;
+    }
+    .section-name {
+      font-size: 1rem;
+      color: #2c3e50;
+      font-weight: 500;
+    }
+    .section-item.completed .section-name {
+      color: #2e7d32;
+      text-decoration: line-through;
+      text-decoration-color: #a5d6a7;
+    }
+    .section-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+      font-size: 0.8rem;
+      color: #8e9aaf;
+    }
+    .stars {
+      color: #f5a623;
+      letter-spacing: 2px;
+    }
+    .section-hours {
+      background: #f0f4f8;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 500;
+      color: #5e6f8d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card header">
+      <h1>📘 注会经济法</h1>
+      <div class="subtitle">点击章节即可标记完成</div>
+    </div>
+
+    <!-- 总进度卡片 -->
+    <div class="card progress-section">
+      <div class="big-percent" id="percentDisplay">0%</div>
+      <div class="progress-detail" id="progressDetail">已完成 0 / 110 小时</div>
+      <div class="progress-wrapper">
+        <div class="progress-fill" id="progressFill">0%</div>
+      </div>
+      <button class="reset-btn" id="resetBtn">↺ 重置全部进度</button>
+    </div>
+
+    <!-- 章节列表将动态插入 -->
+    <div id="chapterContainer"></div>
+  </div>
+
+  <script>
+    // ---------- 1. 经济法章节数据（基于PDF规划表整理）----------
+    const chapters = [
+      {
+        chapter: "第一章 法律基本原理",
+        sections: [
+          { name: "法律基本概念", hours: 2, stars: 2 },
+          { name: "法律关系", hours: 2, stars: 2 },
+          { name: "习近平法治思想引领全面依法治国基本方略", hours: 0.5, stars: 1 }
+        ]
+      },
+      {
+        chapter: "第二章 基本民事法律制度",
+        sections: [
+          { name: "民事法律行为制度", hours: 3, stars: 3 },
+          { name: "代理制度", hours: 1, stars: 3 },
+          { name: "诉讼时效制度", hours: 1.5, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第三章 物权法律制度",
+        sections: [
+          { name: "物权法律制度概述", hours: 1.5, stars: 2 },
+          { name: "物权变动", hours: 1.5, stars: 3 },
+          { name: "所有权", hours: 2, stars: 3 },
+          { name: "用益物权", hours: 1, stars: 3 },
+          { name: "担保物权", hours: 4, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第四章 合同法律制度",
+        sections: [
+          { name: "合同的订立", hours: 2, stars: 3 },
+          { name: "合同的效力", hours: 1, stars: 3 },
+          { name: "合同的履行", hours: 2, stars: 3 },
+          { name: "合同的保全", hours: 1, stars: 3 },
+          { name: "合同的担保", hours: 3, stars: 3 },
+          { name: "合同的变更和转让", hours: 1, stars: 3 },
+          { name: "合同的权利义务终止", hours: 0.5, stars: 3 },
+          { name: "违约责任", hours: 0.5, stars: 3 },
+          { name: "几类主要的典型合同", hours: 4.5, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第五章 合伙企业法律制度",
+        sections: [
+          { name: "合伙企业法律制度概述", hours: 0.5, stars: 1 },
+          { name: "普通合伙企业", hours: 2, stars: 3 },
+          { name: "有限合伙企业", hours: 1.5, stars: 3 },
+          { name: "合伙企业的解散和清算", hours: 0.5, stars: 2 }
+        ]
+      },
+      {
+        chapter: "第六章 公司法律制度",
+        sections: [
+          { name: "公司法基本概念与制度", hours: 4, stars: 3 },
+          { name: "股份有限公司", hours: 2, stars: 3 },
+          { name: "有限责任公司", hours: 1.5, stars: 3 },
+          { name: "公司的财务会计", hours: 0.5, stars: 3 },
+          { name: "公司重大变更", hours: 1, stars: 2 },
+          { name: "公司解散和清算", hours: 1, stars: 2 }
+        ]
+      },
+      {
+        chapter: "第七章 证券法律制度",
+        sections: [
+          { name: "证券法律制度概述", hours: 3, stars: 3 },
+          { name: "股票的发行", hours: 3.5, stars: 3 },
+          { name: "公司债券的发行与交易", hours: 3, stars: 3 },
+          { name: "股票的公开交易", hours: 0.5, stars: 2 },
+          { name: "上市公司收购和重组", hours: 7, stars: 3 },
+          { name: "证券欺诈的法律责任", hours: 4, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第八章 企业破产法律制度",
+        sections: [
+          { name: "破产法律制度概述", hours: 1, stars: 2 },
+          { name: "破产申请与受理", hours: 3.5, stars: 3 },
+          { name: "管理人制度", hours: 1, stars: 3 },
+          { name: "债务人财产", hours: 3.5, stars: 3 },
+          { name: "破产债权", hours: 3, stars: 3 },
+          { name: "债权人会议", hours: 1.5, stars: 2 },
+          { name: "重整程序", hours: 2, stars: 3 },
+          { name: "和解制度", hours: 1.5, stars: 3 },
+          { name: "破产清算程序", hours: 2, stars: 3 },
+          { name: "关联企业合并破产", hours: 0.5, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第九章 票据与支付结算法律制度",
+        sections: [
+          { name: "支付结算概述", hours: 1, stars: 2 },
+          { name: "票据法律制度", hours: 7.5, stars: 3 },
+          { name: "非票据结算方式", hours: 1, stars: 2 }
+        ]
+      },
+      {
+        chapter: "第十章 企业国有资产法律制度",
+        sections: [
+          { name: "企业国有资产法律制度概述", hours: 1, stars: 2 },
+          { name: "企业国有资产产权登记制度", hours: 0.5, stars: 2 },
+          { name: "企业国有资产评估管理制度", hours: 1, stars: 2 },
+          { name: "企业国有资产交易管理制度", hours: 1, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第十一章 反垄断法律制度",
+        sections: [
+          { name: "反垄断法律制度概述", hours: 1, stars: 3 },
+          { name: "垄断协议规制制度", hours: 1, stars: 3 },
+          { name: "滥用市场支配地位规制制度", hours: 1, stars: 3 },
+          { name: "经营者集中反垄断审查制度", hours: 0.5, stars: 3 },
+          { name: "滥用行政权力排除、限制竞争规制制度", hours: 0.5, stars: 3 }
+        ]
+      },
+      {
+        chapter: "第十二章 涉外经济法律制度",
+        sections: [
+          { name: "涉外投资法律制度", hours: 1, stars: 2 },
+          { name: "对外贸易法律制度", hours: 1, stars: 3 },
+          { name: "外汇管理法律制度", hours: 0.5, stars: 2 }
+        ]
+      }
+    ];
+
+    // 计算总时长
+    const TOTAL_HOURS = chapters.reduce((sum, ch) => {
+      return sum + ch.sections.reduce((s, sec) => s + sec.hours, 0);
+    }, 0);
+
+    // ---------- 2. 状态管理 ----------
+    const STORAGE_KEY = 'cpa_economic_law_progress';
+    // 存储格式："chapterIndex-sectionIndex" 的数组，例如 ["0-0", "1-2"]
+    let completedSet = new Set();
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          completedSet = new Set(arr);
+        }
+      } catch (e) {
+        completedSet = new Set();
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...completedSet]));
+    }
+
+    function isSectionCompleted(chapterIdx, sectionIdx) {
+      return completedSet.has(`${chapterIdx}-${sectionIdx}`);
+    }
+
+    function toggleSection(chapterIdx, sectionIdx) {
+      const key = `${chapterIdx}-${sectionIdx}`;
+      if (completedSet.has(key)) {
+        completedSet.delete(key);
+      } else {
+        completedSet.add(key);
+      }
+      saveProgress();
+      updateAllUI();
+    }
+
+    function resetAll() {
+      if (confirm('确定要重置所有进度吗？')) {
+        completedSet.clear();
+        saveProgress();
+        updateAllUI();
+      }
+    }
+
+    // ---------- 3. 计算完成小时数与百分比 ----------
+    function getCompletedHours() {
+      let total = 0;
+      chapters.forEach((ch, ci) => {
+        ch.sections.forEach((sec, si) => {
+          if (isSectionCompleted(ci, si)) {
+            total += sec.hours;
+          }
+        });
+      });
+      return total;
+    }
+
+    function getPercent() {
+      return Math.round((getCompletedHours() / TOTAL_HOURS) * 100);
+    }
+
+    // ---------- 4. 渲染界面 ----------
+    function renderStars(num) {
+      return '★'.repeat(num) + '☆'.repeat(Math.max(0, 3 - num));
+    }
+
+    function renderChapterGroups() {
+      const container = document.getElementById('chapterContainer');
+      container.innerHTML = '';
+
+      chapters.forEach((ch, ci) => {
+        const chDiv = document.createElement('div');
+        chDiv.className = 'chapter-group';
+
+        // 计算该章已完成小时数
+        let chCompletedHours = 0;
+        ch.sections.forEach((sec, si) => {
+          if (isSectionCompleted(ci, si)) chCompletedHours += sec.hours;
+        });
+        const chTotalHours = ch.sections.reduce((s, sec) => s + sec.hours, 0);
+
+        chDiv.innerHTML = `
+          <div class="chapter-title">
+            <span>${ch.chapter}</span>
+            <span class="chapter-hours">${chCompletedHours} / ${chTotalHours} h</span>
+          </div>
+          <div class="sections-list" id="sectionList-${ci}"></div>
+        `;
+        container.appendChild(chDiv);
+
+        const sectionList = document.getElementById(`sectionList-${ci}`);
+        ch.sections.forEach((sec, si) => {
+          const completed = isSectionCompleted(ci, si);
+          const secDiv = document.createElement('div');
+          secDiv.className = `section-item ${completed ? 'completed' : ''}`;
+          secDiv.innerHTML = `
+            <div class="check-circle"></div>
+            <div class="section-info">
+              <div class="section-name">${sec.name}</div>
+              <div class="section-meta">
+                <span class="stars">${renderStars(sec.stars)}</span>
+                <span class="section-hours">${sec.hours}h</span>
+              </div>
+            </div>
+          `;
+          secDiv.addEventListener('click', () => toggleSection(ci, si));
+          sectionList.appendChild(secDiv);
+        });
+      });
+    }
+
+    function updateProgressBar() {
+      const completedHours = getCompletedHours();
+      const percent = getPercent();
+      document.getElementById('percentDisplay').textContent = percent + '%';
+      document.getElementById('progressDetail').textContent = 
+        `已完成 ${completedHours} / ${TOTAL_HOURS} 小时`;
+      const fill = document.getElementById('progressFill');
+      fill.style.width = percent + '%';
+      fill.textContent = percent > 10 ? percent + '%' : '';
+    }
+
+    function updateAllUI() {
+      updateProgressBar();
+      renderChapterGroups();
+    }
+
+    // ---------- 5. 启动 ----------
+    loadProgress();
+    updateAllUI();
+
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+  </script>
+</body>
+</html>
